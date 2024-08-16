@@ -7,10 +7,24 @@ class Chess {
     this.index_end = this.size - 1;
     this.board = [];
     this.validCells = {};
+
+    this.instantiateCellsOnBoard();
+  }
+
+  instantiateCellsOnBoard() {
+    // create cells with empty children array
     for (let i = 0; i < this.size; i++) {
       this.board.push([]);
       for (let j = 0; j < this.size; j++) {
-        this.board[i].push(new Cell(i, j));
+        let cell = new Cell(i, j);
+        this.board[i].push(cell);
+      }
+    }
+
+    // fill children array of each cell with valid cells
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        this.populateWithValidMoves(this.board[i][j]);
       }
     }
   }
@@ -19,73 +33,71 @@ class Chess {
     for (let i = 0; i < this.size; i++) {
       let str = "";
       for (let j = 0; j < this.size; j++) {
-        str += "  " + this.board[i][j].coordinates;
+        str += `   (${this.board[i][j].x}, ${this.board[i][j].y})`;
       }
       console.log(str);
     }
   }
 
-  validMovesSet() {
-    for (let i = 0; i < this.size; i++) {
-      for (let j = 0; j < this.size; j++) {
-        this.findAllMoves(i, j);
-      }
-    }
-  }
-
-  findAllMoves(x, y) {
-    // create an object with
-    // key = (x, y) coordinates and
-    // value equals an array of coordinates of all possible moves
-    if (!this.validCells[`(${x}, ${y})`]) {
-      this.validCells[`(${x}, ${y})`] = [];
-    }
-    //The following 'if' conditions ensure the moves don't go off the board.
+  populateWithValidMoves(cell) {
+    //The following 'if' conditions filters out the moves that go off the board,
+    //and only stores valid moves in each cell's children array.
     // LEFT-DOWN
-    if (x - 1 >= this.index_start && y - 2 >= this.index_start) {
-      this.validCells[`(${x}, ${y})`].push([x - 1, y - 2]);
+    if (cell.x - 1 >= this.index_start && cell.y - 2 >= this.index_start) {
+      cell.children.push(this.board[cell.x - 1][cell.y - 2]);
     }
 
     // LEFT-UP
-    if (x - 1 >= this.index_start && y + 2 <= this.index_end) {
+    if (cell.x - 1 >= this.index_start && cell.y + 2 <= this.index_end) {
       // return;
-      this.validCells[`(${x}, ${y})`].push([x - 1, y + 2]);
+      cell.children.push(this.board[cell.x - 1][cell.y + 2]);
     }
 
     // RIGHT-DOWN
-    if (x + 1 <= this.index_end && y - 2 >= this.index_start) {
-      this.validCells[`(${x}, ${y})`].push([x + 1, y - 2]);
+    if (cell.x + 1 <= this.index_end && cell.y - 2 >= this.index_start) {
+      cell.children.push(this.board[cell.x + 1][cell.y - 2]);
     }
 
     // RIGHT-UP
-    if (x + 1 <= this.index_end && y + 2 <= this.index_end) {
-      this.validCells[`(${x}, ${y})`].push([x + 1, y + 2]);
+    if (cell.x + 1 <= this.index_end && cell.y + 2 <= this.index_end) {
+      cell.children.push(this.board[cell.x + 1][cell.y + 2]);
     }
 
     // DOWN-LEFT
-    if (x - 2 >= this.index_start && y - 1 >= this.index_start) {
-      this.validCells[`(${x}, ${y})`].push([x - 2, y - 1]);
+    if (cell.x - 2 >= this.index_start && cell.y - 1 >= this.index_start) {
+      cell.children.push(this.board[cell.x - 2][cell.y - 1]);
     }
 
     // DOWN-RIGHT
-    if (x - 2 >= this.index_start && y + 1 <= this.index_end) {
-      this.validCells[`(${x}, ${y})`].push([x - 2, y + 1]);
+    if (cell.x - 2 >= this.index_start && cell.y + 1 <= this.index_end) {
+      cell.children.push(this.board[cell.x - 2][cell.y + 1]);
     }
 
     // UP-LEFT
-    if (x + 2 <= this.index_end && y - 1 >= this.index_start) {
-      this.validCells[`(${x}, ${y})`].push([x + 2, y - 1]);
+    if (cell.x + 2 <= this.index_end && cell.y - 1 >= this.index_start) {
+      cell.children.push(this.board[cell.x + 2][cell.y - 1]);
     }
 
     // UP-RIGHT
-    if (x + 2 <= this.index_end && y + 1 <= this.index_end) {
-      this.validCells[`(${x}, ${y})`].push([x + 2, y + 1]);
+    if (cell.x + 2 <= this.index_end && cell.y + 1 <= this.index_end) {
+      cell.children.push(this.board[cell.x + 2][cell.y + 1]);
     }
   }
 
-  getValidCells() {
-    return this.validCells;
+  printValidCellsData() {
+    let validCells = {};
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        if (!validCells[`(${i}, ${j})`]) {
+          validCells[`(${i}, ${j})`] = [];
+        }
+        validCells[`(${i}, ${j})`] = this.board[i][j].children;
+      }
+    }
+    console.log(validCells);
   }
+
+  BFSTraversal(cellA, cellB) {}
 }
 
 export { Chess };
