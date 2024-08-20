@@ -4,6 +4,10 @@ class Cell{
         this.y = y;
         this.children = [];
     }
+
+    setParent(cell){
+        this.parent = cell;
+    }
 }
 
 export { Cell }

@@ -97,7 +97,66 @@ class Chess {
     console.log(validCells);
   }
 
-  BFSTraversal(cellA, cellB) {}
+  knightMoves(cellA, cellB) {
+    this.BFSTraversal(cellA, cellB);
+  }
+
+  BFSTraversal(cellA, cellB) {
+    try {
+      0 <= cellA.x < this.size &&
+        0 <= cellA.y < this.size &&
+        0 <= cellB.x < this.size &&
+        0 <= cellB.y < this.size;
+    } catch (err) {
+      console.log(err);
+      console.log("Invalid Cell");
+      return;
+    }
+
+    let visited = [];
+    let queue = [];
+    let tracks = [];
+    let temp = cellA;
+    queue.push(cellA);
+
+    while (queue.length) {
+      temp = queue.shift();
+      visited.push(temp);
+      // console.log(`Current Position: (${temp.x}, ${temp.y})`);
+      temp.children.forEach((child) => {
+        if (!visited.includes(child)) {
+          queue.push(child);
+          child.setParent(temp);
+        }
+      });
+
+      if (temp == cellB) {
+        // console.log(`cellB found!! ${++counter} times.`);
+        let path = [];
+        let dummyParent = temp;
+        while (dummyParent) {
+          path.push(dummyParent);
+          dummyParent = dummyParent.parent;
+        }
+        tracks.push(path);
+      }
+    }
+
+    let shortestPathIndex = 0;
+    for (let i = 0; i < tracks.length; i++) {
+      if (tracks[i].length < tracks[shortestPathIndex].length) {
+        shortestPathIndex = i;
+      }
+    }
+    console.log(
+      `You made it in ${tracks[shortestPathIndex].length} moves. Here's your path:`
+    );
+    for (let i = tracks[shortestPathIndex].length - 1; i >= 0; i--) {
+      console.log(
+        `[${tracks[shortestPathIndex][i].x}, ${tracks[shortestPathIndex][i].y}]`
+      );
+    }
+  }
 }
 
 export { Chess };
